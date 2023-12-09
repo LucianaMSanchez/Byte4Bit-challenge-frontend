@@ -1,6 +1,6 @@
 import React from 'react'
 import {useAppDispatch} from '@/redux/hooks'
-import {addProduct} from '@/redux/features/productsSlice'
+import {addProduct} from '@/redux/features/cartSlice'
 
 export default function DashboardComponent() {
 
