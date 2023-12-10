@@ -1,7 +1,9 @@
 "use client"
 import React from 'react'
 import {useGetProductsQuery} from '@/redux/services/productApi'
-import Image from 'next/image'
+import { CardComponent } from './CardComponent'
+import { Product } from '@/interfaces/Product'
+
 
 export default function HomeComponent() {
 
@@ -12,16 +14,11 @@ export default function HomeComponent() {
 
   return (
     <div>
-      {
-      data?.map(product => (
-        <div>
-          <p>{product.title}</p>
-          <p>{product.description}</p>
-          <p>{product.price}</p>
-          <Image src={product.image} width={600} alt={`${product.title} image`} ></Image>
+      {data?.map((product: Product) => (
+        <div key={product.id}> 
+          <CardComponent product={product} />
         </div>
-      ))
-      }
+      ))}
     </div>
   )
 }
