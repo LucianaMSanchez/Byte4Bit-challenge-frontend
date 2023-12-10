@@ -1,9 +1,11 @@
 import DashboardComponent from '@/components/DashboardComponent'
+import { useAuthentication } from '@/utils/TokenAuth'
+
+
 import React from 'react'
-import { useAuthentication } from '@/utils/tokenAuth';
 
 export default function DashboardPage() {
-  useAuthentication();
+  useAuthentication()
   return (
     <div>
       <DashboardComponent/>

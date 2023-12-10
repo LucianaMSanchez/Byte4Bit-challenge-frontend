@@ -5,57 +5,57 @@ import {
   Card,
   Input,
   Button,
-  Typography
+  Typography,
+  Select,
+  Option
 } from '@material-tailwind/react'
 
 interface NewProfile {
   name: string;
   email: string;
-  password_1: string;
-  password_2: string;
+  password: string
 }
 
 interface ValidationErrors extends Record<keyof NewProfile, string> {
   incomplete?: boolean;
 }
 
-interface RegisterComponentProps {
-  admin: boolean; 
-}
 
-export default function RegisterComponent({
-  admin
-}: RegisterComponentProps) {
+export default function RegisterComponent() {
   const [newProfile, setNewProfile] = useState<NewProfile>({
-    name: '',
-    email: '',
-    password_1: '',
-    password_2: '',
+    name: "",
+    email: "",
+    password: ""
   });
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
-    name: '',
-    email: '',
-    password_1: '',
-    password_2: '',
-    incomplete: true,
+    name: "",
+    email: "",
+    password: ""
   });
+
+  const [selectedRole, setSelectedRole] = useState<string>("user");
 
   const router = useRouter();
 
   const inputs: (keyof NewProfile)[] = Object.keys(newProfile) as (keyof NewProfile)[];
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  
     setNewProfile((prevProfile) => ({
       ...prevProfile,
       [event.target.name]: event.target.value,
     }));
   
-    setValidationErrors((prevErrors) => profileValidation({
-      ...newProfile,
+    setValidationErrors((prevProfile) => profileValidation({
+      ...prevProfile,
       [event.target.name]: event.target.value,
     }));
   };
+
+const handleRoleChange = (value: string | undefined) => {
+  setSelectedRole(value || "user");
+};
 
   const handleSubmit = async () => {
     if (
@@ -65,10 +65,10 @@ export default function RegisterComponent({
       alert('incomplete');
     } else {
       const postProfile = {
-        admin,
         email: newProfile.email,
-        password: newProfile.password_1,
+        password: newProfile.password,
         name: newProfile.name,
+        role: selectedRole,
       };
 
       // hacer post al back
@@ -113,6 +113,17 @@ export default function RegisterComponent({
                 {validationErrors[input] ? <p className='text-xs text-red-900'>{validationErrors[input]}</p> : null}
               </div>
             ))}
+          </div>
+          <div className="w-72">
+            <Select
+              label="role"
+              placeholder=""
+              value={selectedRole}
+              onChange={(value) => handleRoleChange(value)}
+            >
+              <Option value="user">User</Option>
+              <Option value="admin">Admin</Option>
+            </Select>
           </div>
           <Button
             className="mt-6 bg-[#571B58] hover:shadow-m shadow-none"
