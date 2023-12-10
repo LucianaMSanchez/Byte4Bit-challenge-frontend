@@ -38,8 +38,16 @@ const profileValidation = (profile: User) => {
       '*The password must contain at least one uppercase letter, one special character or number, and should not contain spaces.';
   }
 
-  errors.incomplete = !profile.name || !profile.email || !profile.password;
-
+  if (
+    profile.name &&
+    profile.email &&
+    profile.password
+  ) {
+    errors.incomplete = false
+  } else {
+    errors.incomplete = true
+  }
+  
   return errors;
 };
 

@@ -1,6 +1,8 @@
+"use client"
 import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import profileValidation from '@/utils/profileValidations';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { useCreateUserMutation } from '@/redux/services/userApi';
 import {
   Card,
   Input,
@@ -35,7 +37,7 @@ export default function RegisterComponent() {
   });
 
   const [selectedRole, setSelectedRole] = useState<string>("user");
-
+  const [createUserMutation, { isLoading, isError, data }] = useCreateUserMutation();
   const router = useRouter();
 
   const inputs: (keyof NewProfile)[] = Object.keys(newProfile) as (keyof NewProfile)[];
@@ -57,24 +59,22 @@ const handleRoleChange = (value: string | undefined) => {
   setSelectedRole(value || "user");
 };
 
-  const handleSubmit = async () => {
-    if (
-      validationErrors.incomplete ||
-      Object.keys(validationErrors).length > 1
-    ) {
-      alert('incomplete');
-    } else {
-      const postProfile = {
-        email: newProfile.email,
-        password: newProfile.password,
-        name: newProfile.name,
-        role: selectedRole,
-      };
-
-      // hacer post al back
-      router.push('/login');
-    }
-  };
+const handleSubmit = async () => {
+  
+  if (validationErrors.incomplete || Object.keys(validationErrors).length > 1) {
+    alert('Incomplete fields or validation errors');
+  } else {
+    const postProfile = {
+      email: newProfile.email,
+      password: newProfile.password,
+      name: newProfile.name,
+      role: selectedRole,
+    };
+    
+    await createUserMutation(postProfile);
+    router.push('/login');
+  }
+};
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {

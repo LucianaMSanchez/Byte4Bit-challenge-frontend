@@ -15,8 +15,22 @@ export const productApi = createApi({
         }),
         getProductByTitle: builder.query<Product, {title: string}>({
             query: (title) => `products?name=${title}`
-        })
-    })
+        }),
+        addProduct: builder.mutation<Product, Product>({
+            query: (newProduct) => ({
+              url: 'products',
+              method: 'POST',
+              body: newProduct,
+            })
+        }),
+        updateProduct: builder.mutation<Product, Product>({
+            query: (newProduct) => ({
+              url: 'products',
+              method: 'PUT',
+              body: newProduct,
+            })
+        }),
+})
 })
 
-export const {useGetProductsQuery, useGetProductByIdQuery} = productApi
+export const {useGetProductsQuery, useGetProductByIdQuery, useGetProductByTitleQuery, useUpdateProductMutation, useAddProductMutation} = productApi
