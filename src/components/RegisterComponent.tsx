@@ -1,26 +1,16 @@
 "use client"
-import { useState, ChangeEvent, KeyboardEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
 import profileValidation from '@/utils/profileValidations';
 import { useRouter } from 'next/navigation';
 import { useCreateUserMutation } from '@/redux/services/userApi';
+import { NewProfile } from '@/interfaces/NewProfile';
+import { ApiError } from '@/interfaces/ApiError';
 import {
   Card,
   Input,
   Button,
   Typography,
-  Select,
-  Option
 } from '@material-tailwind/react'
-
-interface NewProfile {
-  name: string;
-  email: string;
-  password: string
-}
-
-interface ValidationErrors extends Record<keyof NewProfile, string> {
-  incomplete?: boolean;
-}
 
 
 export default function RegisterComponent() {
@@ -30,20 +20,29 @@ export default function RegisterComponent() {
     password: ""
   });
 
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
+  const [validationErrors, setValidationErrors] = useState<NewProfile>({
     name: "",
     email: "",
     password: ""
   });
-
+  const [allFieldsCompleted, setAllFieldsCompleted] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>("user");
-  const [createUserMutation, { isLoading, isError, data }] = useCreateUserMutation();
+  const [createUserMutation, { error, data: register }] = useCreateUserMutation();
   const router = useRouter();
-
   const inputs: (keyof NewProfile)[] = Object.keys(newProfile) as (keyof NewProfile)[];
+  const [errors, setErrors] = useState("")
+
+  useEffect(()=>{
+    if (error) {
+      const apiError = error as ApiError;
+      if (apiError.data) {
+        setErrors(apiError.data);
+      }
+    }
+  },[error])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-  
+
     setNewProfile((prevProfile) => ({
       ...prevProfile,
       [event.target.name]: event.target.value,
@@ -55,26 +54,10 @@ export default function RegisterComponent() {
     }));
   };
 
-const handleRoleChange = (value: string | undefined) => {
-  setSelectedRole(value || "user");
-};
-
-const handleSubmit = async () => {
-  
-  if (validationErrors.incomplete || Object.keys(validationErrors).length > 1) {
-    alert('Incomplete fields or validation errors');
-  } else {
-    const postProfile = {
-      email: newProfile.email,
-      password: newProfile.password,
-      name: newProfile.name,
-      role: selectedRole,
-    };
-    
-    await createUserMutation(postProfile);
-    router.push('/login');
-  }
-};
+  const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedRole(value || "user");
+  };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -82,12 +65,34 @@ const handleSubmit = async () => {
     }
   };
 
-  const incomplete = validationErrors.incomplete || Object.keys(validationErrors).length > 1;
+  const areAllFieldsCompleted = () => {
+    const fields = Object.values(newProfile);
+    return fields.every((field) => field !== "" && field !== null);
+  };
+
+  useEffect(() => {
+      setAllFieldsCompleted(areAllFieldsCompleted());
+  }, [newProfile]);
+
+  const handleSubmit = async () => {
+  
+      const postProfile = {
+        email: newProfile.email,
+        password: newProfile.password,
+        name: newProfile.name,
+        role: selectedRole,
+      }
+    
+    await createUserMutation(postProfile);   
+    if(register && errors.length === 0) {
+      router.push('/login')
+    }
+  };
 
   return (
     <div className="min-h-[calc(100vh-15rem)] mt-10 grid place-content-center gap-5">
       <Card color="white" shadow={false} className='flex flex-col items-center p-5 py-10 shadow-2xl' placeholder="">
-        <Typography variant="h4" className='text-[#FAA917] text-4xl' placeholder="">
+        <Typography variant="h4" className='text-[#201e72] text-4xl' placeholder="">
           Sign Up
         </Typography>
         <Typography color="gray" className="mt-1 font-normal" placeholder="">
@@ -104,37 +109,38 @@ const handleSubmit = async () => {
                   onKeyDown={handleKeyPress}
                   value={newProfile[input]}
                   name={input}
-                  label={`${input.includes('password') ? 'password' : input}...`}
+                  label={`${input.includes('password') ? 'password' : input}`}
                   error={!!validationErrors[input]}
                   size="lg"
                   placeholder=""
                   crossOrigin=""
+                  className="p-2 bg-gray-200"
                 />
                 {validationErrors[input] ? <p className='text-xs text-red-900'>{validationErrors[input]}</p> : null}
               </div>
             ))}
           </div>
-          <div className="w-72">
-            <Select
-              label="role"
-              placeholder=""
-              value={selectedRole}
-              onChange={(value) => handleRoleChange(value)}
+          <div className="w-full">
+            <select
+              name="role"
+              onChange={(event) => handleRoleChange(event)}
+              className="w-full"
             >
-              <Option value="user">User</Option>
-              <Option value="admin">Admin</Option>
-            </Select>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
           <Button
-            className="mt-6 bg-[#571B58] hover:shadow-m shadow-none"
+            className="mt-6 p-2 rounded-md bg-[#160961] hover:shadow-m shadow-none"
             fullWidth
             onClick={handleSubmit}
-            disabled={incomplete}
+            disabled={!allFieldsCompleted}
             placeholder=""
           >
             Register
           </Button>
         </form>
+        {errors && <span>{errors}</span>}
       </Card>
     </div>
   );

@@ -1,18 +1,18 @@
 "use client"
 import React from 'react'
-import {useAppDispatch} from '@/redux/hooks'
-// import {addProduct} from '@/redux/services/productApi'
+import {useAddProductMutation} from '@/redux/services/productApi'
 import useAuthentication from '@/utils/tokenAuthentication'
-
+import { useSession } from 'next-auth/react'
 
 export default function DashboardComponent() {
+  const { data: session, status } = useSession();
   useAuthentication()
-  const dispatch = useAppDispatch()
 
+  const addProduct = [useAddProductMutation, {data: product, error}]
   return (
     <div>
       <button onClick = {()=>{
-        // dispatch(addProduct())
+       
       }}
       >
         Add Product

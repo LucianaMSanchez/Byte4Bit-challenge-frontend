@@ -5,11 +5,7 @@ const profileValidation = (profile: User) => {
   const validateEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const validatePassword = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z0-9!@#$%^&*()_+]+$/;
 
-  interface UserErrors extends Record<keyof User, string> {
-    incomplete?: boolean;
-  }
-
-  const errors: UserErrors = {
+  const errors: User = {
     name: "",
     email: "",
     password: "",
@@ -38,16 +34,6 @@ const profileValidation = (profile: User) => {
       '*The password must contain at least one uppercase letter, one special character or number, and should not contain spaces.';
   }
 
-  if (
-    profile.name &&
-    profile.email &&
-    profile.password
-  ) {
-    errors.incomplete = false
-  } else {
-    errors.incomplete = true
-  }
-  
   return errors;
 };
 

@@ -4,33 +4,46 @@ import {Product} from '@/interfaces/Product'
 export const productApi = createApi({
     reducerPath: "productAPI",
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost3001/api/products"
+        baseUrl: "http://localhost:3001/api"
     }),
     endpoints: (builder) => ({
         getProducts: builder.query<Product[], null>({
-            query: () => "products"
+            query: () => "/products",
         }),
         getProductById: builder.query<Product, {id: string}>({
-            query: (id) => `products/${id}`
+            query: (id) => `/products/${id}`
         }),
         getProductByTitle: builder.query<Product, {title: string}>({
-            query: (title) => `products?name=${title}`
+            query: (title) => `/products?name=${title}`
         }),
         addProduct: builder.mutation<Product, Product>({
             query: (newProduct) => ({
-              url: 'products',
+              url: '/products',
               method: 'POST',
               body: newProduct,
-            })
+            }),
         }),
         updateProduct: builder.mutation<Product, Product>({
             query: (newProduct) => ({
-              url: 'products',
+              url: `/products/${newProduct.id}`,
               method: 'PUT',
               body: newProduct,
+            })
+        }),
+        deleteProduct: builder.mutation<Product, {id: string}>({
+            query: (id) => ({
+              url: `/products/${id}`,
+              method: 'DELETE',
             })
         }),
 })
 })
 
-export const {useGetProductsQuery, useGetProductByIdQuery, useGetProductByTitleQuery, useUpdateProductMutation, useAddProductMutation} = productApi
+export const {
+    useGetProductsQuery, 
+    useGetProductByIdQuery, 
+    useGetProductByTitleQuery, 
+    useUpdateProductMutation, 
+    useAddProductMutation,
+    useDeleteProductMutation
+} = productApi

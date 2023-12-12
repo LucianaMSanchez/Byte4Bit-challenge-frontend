@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 const useAuthentication = () => {
   if (typeof window !== 'undefined') {
   const { data } = useSession();
-  const token = localStorage.getItem('token');
+
   const router = useRouter();
 
-  if (!data && !token) {
+  if (!data ) {
     router.push('/login');
     return false; 
   }

@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
@@ -18,9 +17,9 @@ export default function LoginComponent() {
 
   const [validationError, setValidationError] = useState<boolean>(false);
   const [incomplete, setIncomplete] = useState<boolean>(true);
-
-  const router = useRouter();
+  const [errors, setErrors] = useState("")
   const { data } = useSession();
+  const router = useRouter();
 
   const inputs = Object.keys(logInInfo) as (keyof typeof logInInfo)[];
 
@@ -51,12 +50,14 @@ export default function LoginComponent() {
       [name]: value
     }));
 
-    setIncomplete(logInInfo.email.length === 0 || logInInfo.password.length < 7);
+    if (logInInfo.email.length > 0 || logInInfo.password.length > 7){
+      setIncomplete(false)
+    };
   };
 
   const handleSubmit = async () => {
-    if (logInInfo.password.length < 8 || logInInfo.email.length === 0) {
-      alert('incomplete');
+    if (incomplete) {
+      setErrors("Please complete your Sign in information");
     } else {
       try {
         const signInRes = await signIn('credentials', {
@@ -64,15 +65,12 @@ export default function LoginComponent() {
           password: logInInfo.password,
           redirect: false
         });
-  
-        if (!signInRes?.error) {
-          const token = signInRes?.token;
 
-          localStorage.setItem('token', token);
-  
+        if (!signInRes?.error ) {
           isValidate(null); 
         } else {
           isValidate(signInRes.error);
+          console.log(signInRes.error)
         }
       } catch (error) {
         console.error(error);
@@ -80,8 +78,6 @@ export default function LoginComponent() {
     }
   };
   
-
-
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleSubmit();
@@ -91,14 +87,14 @@ export default function LoginComponent() {
   return (
     <div className="min-h-[calc(100vh-15rem)] mt-10 grid place-content-center gap-5">
       <Card color="white" shadow={true} className='flex flex-col items-center p-5 py-20 shadow-2xl' placeholder="">
-        <Typography variant="h4" className='text-[#FAA917] text-4xl' placeholder="">
+        <Typography variant="h4" className='text-[#522797] text-4xl' placeholder="">
           Log In
         </Typography>
         <Typography color="gray" className="mt-1 font-normal" placeholder="">
           Enter your details to Log in.
         </Typography>
         <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-          <div className="mb-4 flex flex-col gap-6">
+          <div className="mb-4 flex flex-col gap-6 p-2">
             {inputs.map((input, index) => (
               <Input
                 key={index}
@@ -107,10 +103,11 @@ export default function LoginComponent() {
                 onKeyDown={handleKeyPress}
                 value={logInInfo[input]}
                 name={input}
-                label={`${input.includes('password') ? 'password' : input}...`}
+                label={`${input.includes('password') ? 'password' : input}`}
                 size='lg'
                 placeholder=""
                 crossOrigin=""
+                className="p-2 bg-gray-200"
               />
             ))}
           </div>
@@ -118,7 +115,7 @@ export default function LoginComponent() {
             {validationError ? 'Email or password incorrect' : null}
           </p>
           <Button
-            className="mt-6 bg-[#571B58] hover:shadow-m shadow-none"
+            className=" text-white mt-6 p-3 rounded-md bg-[#190858] hover:shadow-m shadow-none"
             fullWidth
             onClick={handleSubmit}
             disabled={incomplete}
@@ -127,6 +124,7 @@ export default function LoginComponent() {
             Log In
           </Button>
         </form>
+        {errors && <span>{errors}</span>}
       </Card>
     </div>
   );
