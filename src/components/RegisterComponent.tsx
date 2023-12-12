@@ -59,12 +59,6 @@ export default function RegisterComponent() {
     setSelectedRole(value || "user");
   };
 
-  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      handleSubmit();
-    }
-  };
-
   const areAllFieldsCompleted = () => {
     const fields = Object.values(newProfile);
     return fields.every((field) => field !== "" && field !== null);
@@ -89,6 +83,12 @@ export default function RegisterComponent() {
     }
   };
 
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+  
   return (
     <div className="min-h-[calc(100vh-15rem)] mt-10 grid place-content-center gap-5">
       <Card color="white" shadow={false} className='flex flex-col items-center p-5 py-10 shadow-2xl' placeholder="">

@@ -13,7 +13,13 @@ const handler = NextAuth({
       async authorize(credentials, req) {
         try {
           const response: AxiosResponse = await axios.post("http://localhost:3001/api/users/login", credentials);
-          return response.data;
+          const { data } = response;
+          const { user } = data;
+
+          return {
+            ...data,
+            role: user.role,
+          };
         } catch (error) {
        
           if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -32,6 +38,7 @@ const handler = NextAuth({
     },
     session({ session, token }) {
       session.user = token.user as any;
+      session.role = token.role as any;
       return session;
     },
   },

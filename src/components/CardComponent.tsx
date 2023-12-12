@@ -9,7 +9,7 @@ import {
     Typography,
     Button,
   } from "@material-tailwind/react";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { useDispatch } from "react-redux";
    
   interface CardComponentProps {
@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
   }
   
   export const CardComponent: React.FC<CardComponentProps> = ({ product }) => {
-    
+    const {data} = useSession()
     const dispatch = useDispatch();
 
     const handleAddToCart = () => {
@@ -25,13 +25,15 @@ import { useDispatch } from "react-redux";
     };
 
     const handleRemoveFromCart = () => {
+      if(product.id){
         dispatch(removeProductFromCart(product.id));
+      }
     };
 
     return (
       <Card className="w-96" placeholder="">
         <CardHeader shadow={false} floated={false} className="h-96" placeholder="">
-          <Image
+          <img
             src={product.image}
             alt="card-image"
             className="h-full w-full object-cover"
@@ -43,7 +45,7 @@ import { useDispatch } from "react-redux";
               {product.title}
             </Typography>
             <Typography color="blue-gray" className="font-medium" placeholder="">
-              {product.price}
+              {`${product.price} USD`}
             </Typography>
           </div>
           <Typography
@@ -61,6 +63,7 @@ import { useDispatch } from "react-redux";
             ripple={false}
             fullWidth={true}
             placeholder=""
+            disabled={!data}
             className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
           >
             Add to Cart
@@ -70,7 +73,8 @@ import { useDispatch } from "react-redux";
             ripple={false}
             fullWidth={true}
             placeholder=""
-            className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
+            disabled={!data}
+            className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 mt-6"
           >
             Remove from Cart
           </Button>
