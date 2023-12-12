@@ -20,7 +20,7 @@ export default function LoginComponent() {
   const [errors, setErrors] = useState("")
   const { data } = useSession();
   const router = useRouter();
-
+  console.log(validationError)
   const inputs = Object.keys(logInInfo) as (keyof typeof logInInfo)[];
 
   useEffect(() => {
@@ -125,6 +125,9 @@ export default function LoginComponent() {
           </Button>
         </form>
         {errors && <span>{errors}</span>}
+        <Typography color="gray" className="mt-1 font-normal" placeholder="">
+          Not registered yet? <button className="text-blue-900" onClick={(()=> router.push("/register"))}>Sign up</button>
+        </Typography>
       </Card>
     </div>
   );

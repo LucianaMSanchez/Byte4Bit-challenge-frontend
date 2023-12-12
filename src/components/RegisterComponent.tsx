@@ -78,10 +78,14 @@ export default function RegisterComponent() {
       }
     
     await createUserMutation(postProfile);   
+    
+  };
+
+  useEffect(()=>{
     if(register && errors.length === 0) {
       router.push('/login')
     }
-  };
+  },[register])
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -141,6 +145,9 @@ export default function RegisterComponent() {
           </Button>
         </form>
         {errors && <span>{errors}</span>}
+        <Typography color="gray" className="mt-1 font-normal" placeholder="">
+          Already registered? <button className="text-blue-900" onClick={(()=> router.push("/login"))}>Sign in</button>
+        </Typography>
       </Card>
     </div>
   );

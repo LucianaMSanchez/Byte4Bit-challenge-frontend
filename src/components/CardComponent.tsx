@@ -11,6 +11,7 @@ import {
   } from "@material-tailwind/react";
 import { useSession } from "next-auth/react";
 import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
    
   interface CardComponentProps {
     product: Product;
@@ -19,19 +20,20 @@ import { useDispatch } from "react-redux";
   export const CardComponent: React.FC<CardComponentProps> = ({ product }) => {
     const {data} = useSession()
     const dispatch = useDispatch();
+    const router = useRouter()
 
     const handleAddToCart = () => {
         dispatch(addProductToCart(product));
     };
 
     const handleRemoveFromCart = () => {
-      if(product.id){
-        dispatch(removeProductFromCart(product.id));
+      if(product._id){
+        dispatch(removeProductFromCart(product._id));
       }
     };
 
     return (
-      <Card className="w-96" placeholder="">
+      <Card className="w-full overflow-hidden h-full" placeholder="">
         <CardHeader shadow={false} floated={false} className="h-96" placeholder="">
           <img
             src={product.image}
@@ -58,6 +60,8 @@ import { useDispatch } from "react-redux";
           </Typography>
         </CardBody>
         <CardFooter className="pt-0" placeholder="">
+          {data ? (
+          <div>
           <Button
             onClick={handleAddToCart}
             ripple={false}
@@ -78,6 +82,21 @@ import { useDispatch } from "react-redux";
           >
             Remove from Cart
           </Button>
+          </div>
+    ) : (
+      <div>
+         <Button
+            onClick={()=>router.push("/")}
+            ripple={false}
+            fullWidth={true}
+            placeholder=""
+            className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 mt-6"
+          >
+            Sign in to shop
+          </Button>
+      </div>
+    )
+        }
         </CardFooter>
       </Card>
     );

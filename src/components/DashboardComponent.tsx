@@ -1,9 +1,9 @@
 "use client"
 import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react'
-import {useAddProductMutation} from '@/redux/services/productApi'
+import {useAddProductMutation, useUpdateProductMutation} from '@/redux/services/productApi'
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react'
-import Image from 'next/image';
+import useAuthentication from '@/utils/tokenAuthentication';
 import {
   Card,
   Input,
@@ -13,6 +13,7 @@ import {
  
 export default function DashboardComponent() {
 
+  useAuthentication()
   const [newProduct, setNewProduct] = useState({
     title:"",
     description: "",
@@ -20,6 +21,7 @@ export default function DashboardComponent() {
     image:""
   })
   const [addProductMutation, {data: products, error}]= useAddProductMutation()
+  const [updateProductMutation, {  error: updateProductError }] = useUpdateProductMutation();
   const [allFieldsCompleted, setAllFieldsCompleted] = useState(false);
   const [image, setImage] = useState("");
   const { data: session } = useSession();
@@ -55,10 +57,13 @@ export default function DashboardComponent() {
       }
     
     await addProductMutation(postProduct);   
+  };
+
+  useEffect(()=>{
     if(products && !error) {
       router.push('/')
     }
-  };
+  },[products])
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {

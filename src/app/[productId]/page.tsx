@@ -1,11 +1,12 @@
-import DetailComponent from '@/components/DetailComponent'
-import React from 'react'
+import DetailComponent from '@/components/DetailComponent';
+import React from 'react';
 
-export default function DetailPage() {
-  
+export default function DetailPage( {params}: any) {
+  const {productId} = params
+
   return (
     <div>
-      <DetailComponent  />
+      <DetailComponent productId={productId}/>
     </div>
-  )
+  );
 }
