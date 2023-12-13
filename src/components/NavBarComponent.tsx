@@ -62,7 +62,7 @@ export default function NavbarComponent() {
         placeholder=""
       >
         <Link href="/cart" className="flex items-center">
-          Shoping Cart
+          Shopping Cart
         </Link>
       </Typography>
     </ul>
@@ -72,7 +72,7 @@ export default function NavbarComponent() {
     <Navbar className="m-auto w-full py-2 px-4 lg:px-8 lg:py-4 lg:-mb-6 shadow bg-gradient-to-r from-[#274b8d] to-[#1e0046] z-30" placeholder="">
     <div className="container mx-auto flex items-center justify-between text-blue-gray-200">
           <Link href="/">
-                 <h1 className="mr-4 text-[#93e6ff] cursor-pointer py-1.5 text-xl weight-bold">The Big Store</h1>
+                 <h1 className="mr-4 text-[#93e6ff] cursor-pointer py-1.5 text-xl weight-bold">Byte4Bit Store</h1>
           </Link>
             <div className="mr-4 hidden lg:block">{navList}</div>
             <Button

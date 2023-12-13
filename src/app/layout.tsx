@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import ProvidersComponent from '@/components/ProviderComponent'
 import NavbarComponent from '@/components/NavBarComponent'
+import { DrawerCart } from '@/components/DrawerCart'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -12,18 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ProvidersComponent>
-          <NavbarComponent/>
-          {children}  
-        </ProvidersComponent>
-      </body>
-    </html>
-  )
-}
+    children,
+  }: {
+    children: React.ReactNode
+  }) {
+    return (
+      <html lang="en">
+        <body className={inter.className}>
+          <ProvidersComponent>
+            <DrawerCart/>
+            <NavbarComponent/>
+            {children}  
+          </ProvidersComponent>
+        </body>
+      </html>
+    )
+  }

@@ -5,9 +5,10 @@ import { CardComponent } from './CardComponent'
 // import { SearchBar } from './SearchBarComponent'
 import { Product } from '@/interfaces/Product'
 import { ApiError } from '@/interfaces/ApiError'
-import Link from 'next/link'
+import { usePathname } from 'next/navigation';
+import { clearCart } from '@/redux/features/cartSlice';
 import { PaginationComponent } from './PaginationComponent'
-
+import { useDispatch } from "react-redux";
 
 export default function HomeComponent() {
 
@@ -15,8 +16,16 @@ export default function HomeComponent() {
   // const [allProducts, setAllProducts] = useState<Product[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [postsPerPage] = useState(6)
-  
+  const pathname = usePathname()
   const {data: products, error, isLoading, isFetching} = useGetProductsQuery(null)
+  const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    if (pathname === '/success') {
+      dispatch(clearCart());
+    }
+  }, [pathname]);
 
   useEffect(()=>{
     if (error) {
@@ -48,9 +57,7 @@ export default function HomeComponent() {
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
           {currentProducts?.map((product: Product) => (
             <article key={product?._id} className="mb-10">
-                <Link href={`/${product?._id}`} passHref className="block h-full">
-                    <CardComponent product={product} />
-                </Link>
+                <CardComponent product={product} />
             </article>
             ))}
         </section>

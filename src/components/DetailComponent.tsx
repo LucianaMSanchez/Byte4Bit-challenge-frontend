@@ -1,9 +1,8 @@
 "use client"
 import useAuthentication from '@/utils/tokenAuthentication'
 import React, { useEffect, useState } from 'react'
-import {useAppDispatch} from '@/redux/hooks'
+import {useAppDispatch, useAppSelector} from '@/redux/hooks'
 import { useDeleteProductMutation, useGetProductByIdQuery } from '@/redux/services/productApi'
-import { Product } from '@/interfaces/Product'
 import { addProductToCart, removeProductFromCart } from '@/redux/features/cartSlice'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -20,22 +19,26 @@ export default function DetailComponent({productId}: any) {
   useAuthentication()
   const dispatch = useAppDispatch()
   const router = useRouter();
-  const [newProduct, SetNewProduct] = useState<Product>({
-    title: "",
-    description:"",
-    price:"",
-    image:"",
-    _id:""
-  })
+  const [quantity, setQuantity] = useState<number>(0)
+  const [randomViewersCount, setRandomViewersCount] = useState<number>(randomViewers());
   const {data}= useSession()
   const { data: product, error: getProductError, isLoading, isFetching } = useGetProductByIdQuery(productId);
   const [deleteProductMutation, { data: deleted, error: deleteProductError }] = useDeleteProductMutation(productId);
-  
+  const cart = useAppSelector(state => state.cartReducer.cart)
+
   function randomViewers() {
     const randomNumber = Math.random();
     const viewers = Math.floor(randomNumber * 10) + 1;
     return viewers;
   }
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setRandomViewersCount(randomViewers());
+    }, 90000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleAddToCart = () => {
     if(product) {
@@ -50,7 +53,7 @@ export default function DetailComponent({productId}: any) {
   };
 
   const handleUpdateProduct = () => {
-    router.push("/dashboard")
+    router.push(`dashboard/${product?._id}`)
   };
 
   const handleDeleteProduct = () => {
@@ -65,6 +68,19 @@ export default function DetailComponent({productId}: any) {
     }
   },[deleted])
 
+  const cartUpdate = () => {
+    const foundItem = cart.find((item) => item._id === product?._id);
+    if (foundItem) {
+      setQuantity(foundItem.quantity || 0);
+    } else {
+      setQuantity(0)
+    }
+  };
+
+  useEffect(()=>{
+    cartUpdate()
+  },[cart])
+
   return (
     <div>
        <Link
@@ -73,12 +89,13 @@ export default function DetailComponent({productId}: any) {
       >
         ⬅
       </Link>
-      <div className="flex w-full">
-        <div className="flex-1 flex justify-center">
-          <div className="w-[50vw] p-36 place-content-center">
+      <div className="flex lg:flex-row flex-col w-full h-full">
+        <div className="flex flex-col gap-6 justify-center items-center">
+          <div className="lg:w-[50vw] w-[70vw] lg:p-20 p-6 place-content-center">
             <img src={product?.image} alt="Image product" className="shadow-2xl"></img>
+          </div>
             { (data?.user?.role === "admin") ? (
-          <div className="mt-16">
+          <div className="mt-10 mb-6">
               <Button
                 onClick={handleUpdateProduct}
                 ripple={false}
@@ -100,11 +117,10 @@ export default function DetailComponent({productId}: any) {
               </div>
             ) : (null)
             }
-          </div>
         </div>
         <div className="flex-1 flex justify-center items-center px-20">
           <Card color="transparent" shadow={false} placeholder="" className="items-center p-5 py-10 shadow-2xl">
-            <Typography variant="h4" color="blue-gray" placeholder="">
+            <Typography variant="h2" color="blue-gray" placeholder="">
             {product?.title}
             </Typography>
             <div className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
@@ -120,6 +136,14 @@ export default function DetailComponent({productId}: any) {
                 </Typography>
                 <Typography color="gray" className="mt-1 font-normal" placeholder="">
                   {`${product?.price} USD`}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  color="gray"
+                  className="font-normal opacity-75"
+                  placeholder=""
+                >
+                  {`🛒 ${quantity}`}
                 </Typography>
               </div>
               <div>
@@ -145,7 +169,7 @@ export default function DetailComponent({productId}: any) {
             </div>
             <div className="mt-20">
             <Typography variant="h5" color="blue-gray" placeholder="">
-               {`Other ${randomViewers()} shoppers are viewing this product right now, Hurry up!`}
+               {`Other ${randomViewersCount} shoppers are viewing this product right now, Hurry up!`}
             </Typography>
             </div>
           </Card>

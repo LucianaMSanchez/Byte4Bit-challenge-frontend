@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react'
-import { useAddProductMutation } from '@/redux/services/productApi'
+import { useUpdateProductMutation, useGetProductByIdQuery } from '@/redux/services/productApi'
 import { useRouter } from 'next/navigation';
 import useAuthentication from '@/utils/tokenAuthentication';
 import useAuthorization from '@/utils/roleAuthorization';
@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
  
-export default function DashboardComponent() {
+export default function EditComponent({productId}: any) {
 
   useAuthentication()
   useAuthorization()
@@ -21,10 +21,23 @@ export default function DashboardComponent() {
     price:"",
     image:""
   })
-  const [addProductMutation, {data: products, error}]= useAddProductMutation()
+  const [updateProductMutation, { data: updated, error: updateProductError }] = useUpdateProductMutation();
+  const { data: product } = useGetProductByIdQuery(productId);
   const [allFieldsCompleted, setAllFieldsCompleted] = useState(false);
   const [image, setImage] = useState("");
   const router = useRouter();
+
+  useEffect(()=> {
+    if (product){
+      const oldProduct = {
+        title: product?.title,
+        description: product?.description,
+        price: product?.price,
+        image: product?.image
+      }
+      setNewProduct(oldProduct)
+    }
+  },[])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNewProduct((prevProduct) => ({
@@ -53,16 +66,17 @@ export default function DashboardComponent() {
         description: newProduct.description,
         price: newProduct.price,
         image: newProduct.image,
+        _id: product?._id
       }
     
-    await addProductMutation(postProduct);   
+    await updateProductMutation(postProduct);   
   };
 
   useEffect(()=>{
-    if(products && !error) {
+    if(updated && !updateProductError) {
       router.push('/')
     }
-  },[products])
+  },[updated])
 
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -75,10 +89,10 @@ export default function DashboardComponent() {
       <div className="flex lg:flex-row flex-col w-full h-full justify-center items-center lg:px-36 px-16 sm:px-6 xs:px-2 gap-6">
         <Card color="transparent" shadow={false} placeholder="" className="items-center p-5 py-10 shadow-2xl">
           <Typography variant="h4" color="blue-gray" placeholder="">
-            New product
+            Update product
           </Typography>
           <Typography color="gray" className="mt-1 font-normal" placeholder="">
-            Add a new product to the Store.
+            Update a product from the Store.
           </Typography>
           <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
             <div className="mb-1 flex flex-col gap-4">
@@ -156,7 +170,7 @@ export default function DashboardComponent() {
               placeholder=""            
               onClick={handleSubmit}
               disabled={!allFieldsCompleted}> 
-              Add product
+              Update product
             </Button>
           </form>
         </Card>
