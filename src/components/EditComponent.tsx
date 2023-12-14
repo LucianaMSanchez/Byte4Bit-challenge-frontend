@@ -71,18 +71,18 @@ export default function EditComponent({productId}: any) {
     
     await updateProductMutation(postProduct);   
   };
-
-  useEffect(()=>{
-    if(updated && !updateProductError) {
-      router.push('/')
-    }
-  },[updated])
-
+  
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleSubmit();
     }
   };
+  
+  useEffect(()=>{
+    if(updated && !updateProductError) {
+      router.push('/')
+    }
+  },[updated])
 
   return (
     <div className="flex lg:flex-row flex-col w-full h-full">
