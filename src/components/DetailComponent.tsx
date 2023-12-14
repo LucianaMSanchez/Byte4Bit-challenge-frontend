@@ -2,15 +2,16 @@
 import useAuthentication from '@/utils/tokenAuthentication'
 import React, { useEffect, useState } from 'react'
 import {useAppDispatch, useAppSelector} from '@/redux/hooks'
-import { useDeleteProductMutation, useGetProductByIdQuery } from '@/redux/services/productApi'
+import { useGetProductByIdQuery } from '@/redux/services/productApi'
 import { addProductToCart, removeProductFromCart } from '@/redux/features/cartSlice'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { AlertCustomAnimation } from './Alert'
 import {
   Card,
   Button,
-  Typography,
+  Typography
 } from "@material-tailwind/react";
  
 
@@ -20,10 +21,10 @@ export default function DetailComponent({productId}: any) {
   const dispatch = useAppDispatch()
   const router = useRouter();
   const [quantity, setQuantity] = useState<number>(0)
+  const [alert, setAlert] = useState<boolean>(false)
   const [randomViewersCount, setRandomViewersCount] = useState<number>(randomViewers());
   const {data}= useSession()
   const { data: product, error: getProductError, isLoading, isFetching } = useGetProductByIdQuery(productId);
-  const [deleteProductMutation, { data: deleted, error: deleteProductError }] = useDeleteProductMutation(productId);
   const cart = useAppSelector(state => state.cartReducer.cart)
 
   function randomViewers() {
@@ -57,19 +58,11 @@ export default function DetailComponent({productId}: any) {
   };
 
   const handleDeleteProduct = () => {
-    if(product?._id){
-      deleteProductMutation(product._id);
-    }
+    setAlert(true)
   };
 
-  useEffect(()=>{
-    if(deleted){
-      router.push("/")
-    }
-  },[deleted])
-
   const cartUpdate = () => {
-    const foundItem = cart.find((item) => item._id === product?._id);
+    const foundItem = cart?.find((item) => item._id === product?._id);
     if (foundItem) {
       setQuantity(foundItem.quantity || 0);
     } else {
@@ -89,6 +82,7 @@ export default function DetailComponent({productId}: any) {
       >
         ⬅
       </Link>
+      {alert && <AlertCustomAnimation setAlert={setAlert} productId={product?._id}/>}
       <div className="flex lg:flex-row flex-col w-full h-full">
         <div className="flex flex-col gap-6 justify-center items-center">
           <div className="lg:w-[50vw] w-[70vw] lg:p-20 p-6 place-content-center">

@@ -10,24 +10,41 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
+import { NewProduct } from '@/interfaces/NewProduct';
+import productValidation from '@/utils/productValidations';
  
 export default function DashboardComponent() {
 
   useAuthentication()
   useAuthorization()
-  const [newProduct, setNewProduct] = useState({
+
+  const [newProduct, setNewProduct] = useState<NewProduct>({
     title:"",
     description: "",
     price:"",
     image:""
   })
+
+  const [validationErrors, setValidationErrors] = useState<NewProduct>({
+    title: "",
+    description: "",
+    price: "",
+    image:""
+  });
+
   const [addProductMutation, {data: products, error}]= useAddProductMutation()
   const [allFieldsCompleted, setAllFieldsCompleted] = useState(false);
   const [image, setImage] = useState("");
   const router = useRouter();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+
     setNewProduct((prevProduct) => ({
+      ...prevProduct,
+      [event.target.name]: event.target.value,
+    }));
+
+    setValidationErrors((prevProduct) => productValidation({
       ...prevProduct,
       [event.target.name]: event.target.value,
     }));
@@ -99,6 +116,7 @@ export default function DashboardComponent() {
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
+               {validationErrors.title ? <p className='text-xs text-red-900'>{validationErrors.title}</p> : null}
               <Typography variant="h6" color="blue-gray" className="-mb-3" placeholder="">
                 Description
               </Typography>
@@ -115,6 +133,7 @@ export default function DashboardComponent() {
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
+               {validationErrors.description ? <p className='text-xs text-red-900'>{validationErrors.description}</p> : null}
               <Typography variant="h6" color="blue-gray" className="-mb-3" placeholder="">
                 Price
               </Typography>
@@ -132,6 +151,7 @@ export default function DashboardComponent() {
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
+               {validationErrors.price ? <p className='text-xs text-red-900'>{validationErrors.price}</p> : null}
               <Typography variant="h6" color="blue-gray" className="-mb-3" placeholder="">
                 Image
               </Typography>
@@ -155,7 +175,7 @@ export default function DashboardComponent() {
               fullWidth 
               placeholder=""            
               onClick={handleSubmit}
-              disabled={!allFieldsCompleted}> 
+              disabled={!allFieldsCompleted || Object.values(validationErrors).some(error => error !== "")}> 
               Add product
             </Button>
           </form>

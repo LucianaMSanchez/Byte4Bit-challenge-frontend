@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import {useGetProductsQuery} from '@/redux/services/productApi'
 import { CardComponent } from './CardComponent'
-// import { SearchBar } from './SearchBarComponent'
+import { SearchBar } from './SearchBarComponent'
 import { Product } from '@/interfaces/Product'
 import { ApiError } from '@/interfaces/ApiError'
 import { usePathname } from 'next/navigation';
@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 export default function HomeComponent() {
 
   const [errors, setErrors] = useState("")
-  // const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [search, setSearch] = useState<Product[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [postsPerPage] = useState(6)
   const pathname = usePathname()
@@ -36,12 +36,9 @@ export default function HomeComponent() {
     }
   },[error])
 
-  if (isLoading || isFetching) return <p>...Loading</p>
-
   const indexLast = currentPage * postsPerPage
   const indexFirst = indexLast - postsPerPage
-  const currentProducts = products?.slice(indexFirst, indexLast)
-
+  let currentProducts = search ? (search?.slice(indexFirst, indexLast)) : (products?.slice(indexFirst, indexLast))
   const pageNumbers = []
 
   if(products){
@@ -53,7 +50,9 @@ export default function HomeComponent() {
   return (
     <>
     <div className="container m-auto px-5">
-       {/* <SearchBar allProducts={allProducts} setAllProducts={setAllProducts} products={products? products : []}/> */}
+      <div className="w-full flex justify-end items-end mt-10">
+        <SearchBar setSearch={setSearch} />
+      </div>
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
           {currentProducts?.map((product: Product) => (
             <article key={product?._id} className="mb-10">

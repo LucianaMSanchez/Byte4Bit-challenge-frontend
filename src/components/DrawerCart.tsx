@@ -24,22 +24,34 @@ export function DrawerCart() {
           <Typography variant="h6" color="blue-gray" placeholder="">
            Shopping Cart
           </Typography>
-        <div className="mb-6 flex h-full flex-col items-center gap-6 mt-10">
-        {cart?.map(({ title, image, quantity}, index) => (
-            <div className="w-24">
-                <img src={image} alt="product" />
-                <div className="flex w-full justify-between">
-                    <Typography variant="small" color="blue-gray" className="font-normal" placeholder="">
-                        {title} 
-                    </Typography>
-                    <Typography variant="small" color="blue-gray" className="font-normal" placeholder="">
-                        {`🛒${quantity}`}
-                    </Typography>
-                </div>
+            {cart.length === 0 ? (    
+            <div className="mt-40">
+              <Typography variant="h3" color="blue-gray" placeholder="">
+                Welcome!
+                <br />
+              </Typography>
+              <Typography variant="small" color="blue-gray" placeholder="">
+                Your cart is still empty..☹
+                <br />
+              </Typography>
             </div>
-        ))
-        }
+            ) : (  
+            <div className="mb-6 flex h-full flex-col items-center gap-6 mt-10">
+            {cart?.map(({ title, image, quantity}, index) => (
+                <div className="w-24" key={index}>
+                    <img src={image} alt="product" />
+                    <div className="flex w-full justify-between">
+                        <Typography variant="small" color="blue-gray" className="font-normal" placeholder="">
+                            {title} 
+                        </Typography>
+                        <Typography variant="small" color="blue-gray" className="font-normal" placeholder="">
+                            {`🛒${quantity}`}
+                        </Typography>
+                    </div>
+                </div>
+            ))}
         </div>
+        )}
       </Drawer>
     </React.Fragment>
   );

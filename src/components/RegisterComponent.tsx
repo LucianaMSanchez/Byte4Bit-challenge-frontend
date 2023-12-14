@@ -14,6 +14,7 @@ import {
 
 
 export default function RegisterComponent() {
+
   const [newProfile, setNewProfile] = useState<NewProfile>({
     name: "",
     email: "",
@@ -25,6 +26,7 @@ export default function RegisterComponent() {
     email: "",
     password: ""
   });
+
   const [allFieldsCompleted, setAllFieldsCompleted] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>("user");
   const [createUserMutation, { error, data: register }] = useCreateUserMutation();
@@ -138,7 +140,7 @@ export default function RegisterComponent() {
             className="mt-6 p-2 rounded-md bg-[#160961] hover:shadow-m shadow-none"
             fullWidth
             onClick={handleSubmit}
-            disabled={!allFieldsCompleted}
+            disabled={!allFieldsCompleted || Object.values(validationErrors).some(error => error !== "")}
             placeholder=""
           >
             Register

@@ -54,7 +54,7 @@ export default function CartComponent() {
     }
 
     return (
-    <div className="container m-auto items-center flex flex-col h-full">
+    <div className="container m-auto items-center flex flex-col w-full mb-10">
     <Card className="h-full w-[80%] mt-32 " placeholder="">
       <table className="w-full  table-auto text-left">
         <thead>
